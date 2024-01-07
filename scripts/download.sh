@@ -23,11 +23,13 @@ wget https://bioinformatics.cnio.es/data/courses/decont/C57BL_6NJ-12.5dpp.1.2s_s
 wget https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.1s_sRNA.fastq.gz
 wget https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.2s_sRNA.fastq.gz
 
-gunzip https://bioinformatics.cnio.es/data/courses/decont/C57BL_6NJ-12.5dpp.1.1s_sRNA.fastq.gz
-gunzip https://bioinformatics.cnio.es/data/courses/decont/C57BL_6NJ-12.5dpp.1.2s_sRNA.fastq.gz 
-gunzip https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.1s_sRNA.fastq.gz 
-gunzip https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.2s_sRNA.fastq.gz
+gunzip ~/decont/data/C57BL_6NJ-12.5dpp.1.1s_sRNA.fastq.gz
+gunzip ~/decont/data/C57BL_6NJ-12.5dpp.1.2s_sRNA.fastq.gz 
+gunzip ~/decont/data/SPRET_EiJ-12.5dpp.1.1s_sRNA.fastq.gz 
+gunzip ~/decont/data/SPRET_EiJ-12.5dpp.1.2s_sRNA.fastq.gz
 
 cd ~/decont/res
 
-wget https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz | gunzip https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz
+wget https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz
+
+gunzip ~/decont/res/contaminants.fasta.gz
