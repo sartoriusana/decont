@@ -16,3 +16,18 @@
 #   CCAGGATTTACAGACTTTAAA
 #
 #   If $4 == "another" only the **first two sequence** should be output
+cd ~/decont/data
+
+wget https://bioinformatics.cnio.es/data/courses/decont/C57BL_6NJ-12.5dpp.1.1s_sRNA.fastq.gz
+wget https://bioinformatics.cnio.es/data/courses/decont/C57BL_6NJ-12.5dpp.1.2s_sRNA.fastq.gz
+wget https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.1s_sRNA.fastq.gz
+wget https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.2s_sRNA.fastq.gz
+
+gunzip https://bioinformatics.cnio.es/data/courses/decont/C57BL_6NJ-12.5dpp.1.1s_sRNA.fastq.gz
+gunzip https://bioinformatics.cnio.es/data/courses/decont/C57BL_6NJ-12.5dpp.1.2s_sRNA.fastq.gz 
+gunzip https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.1s_sRNA.fastq.gz 
+gunzip https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.2s_sRNA.fastq.gz
+
+cd ~/decont/res
+
+wget https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz | gunzip https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz
