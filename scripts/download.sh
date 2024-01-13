@@ -24,9 +24,9 @@ uncompress="$3"
 
 #Extraer el nombre del archivo de la URL.
 filename="$(basename "$url")"
-cat filename
+
 #Descargamos el archivo
-wget "$url" -P "$destination_dir"
+wget "$url" -P "$destination_dir" "$uncompress"
 
 #Verificar si se debe descomprimir. En caso de que sí, además se eliminan todas las entradas de small nuclear RNA.
 
@@ -39,3 +39,15 @@ if [ "$uncompress" = "yes" ]; then
 	fi
 fi
 
+#Definimos la variable donde vamos a guardar el archivo descomprimido.
+
+toclean="$destination_dir/${filename%.*}"
+
+
+echo "Intentando limpiar el archivo $toclean"
+
+if [ "${toclean##*.}" = "fasta" ]; then 
+        awk "/"nuclear"/,/^>/{next} 1" "$toclean" > "$destination_dir/${filename%.*}_filtered.fasta"
+else
+        echo "El fichero no está en formato .fasta."
+fi
