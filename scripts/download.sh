@@ -16,20 +16,26 @@
 #   CCAGGATTTACAGACTTTAAA
 #
 #   If $4 == "another" only the **first two sequence** should be output
-cd ~/decont/data
 
-wget https://bioinformatics.cnio.es/data/courses/decont/C57BL_6NJ-12.5dpp.1.1s_sRNA.fastq.gz
-wget https://bioinformatics.cnio.es/data/courses/decont/C57BL_6NJ-12.5dpp.1.2s_sRNA.fastq.gz
-wget https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.1s_sRNA.fastq.gz
-wget https://bioinformatics.cnio.es/data/courses/decont/SPRET_EiJ-12.5dpp.1.2s_sRNA.fastq.gz
+#Definimos los argumentos que debemos indicar a la shell. 
+url="$1"
+destination_dir="$2"
+uncompress="$3"
 
-gunzip ~/decont/data/C57BL_6NJ-12.5dpp.1.1s_sRNA.fastq.gz
-gunzip ~/decont/data/C57BL_6NJ-12.5dpp.1.2s_sRNA.fastq.gz 
-gunzip ~/decont/data/SPRET_EiJ-12.5dpp.1.1s_sRNA.fastq.gz 
-gunzip ~/decont/data/SPRET_EiJ-12.5dpp.1.2s_sRNA.fastq.gz
+#Extraer el nombre del archivo de la URL.
+filename="$(basename "$url")"
+cat filename
+#Descargamos el archivo
+wget "$url" -P "$destination_dir"
 
-cd ~/decont/res
+#Verificar si se debe descomprimir. En caso de que sí, además se eliminan todas las entradas de small nuclear RNA.
 
-wget https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz
+if [ "$uncompress" = "yes" ]; then
+	if [ "${filename##*.}" = "gz" ]; then
+		echo "Intentando descomprimir: $destination_dir/$filename"
+		gunzip "$destination_dir/$filename"
+	else
+		echo "El fichero no está comprimido."
+	fi
+fi
 
-gunzip ~/decont/res/contaminants.fasta.gz
