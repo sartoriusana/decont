@@ -15,8 +15,8 @@ done
 
 contaminants_url="https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz"
 
-if [ ! -e "data/contaminants.fasta" ]; then
-	bash scripts/download.sh "$contaminants_url" 
+if [ ! -e "res/contaminants.fasta" ]; then
+	bash scripts/download.sh "$contaminants_url" res yes 
 else
 	echo "The contaminants database is already downloaded. Skipping step."
 fi
@@ -42,6 +42,7 @@ if [ ! -d "out/merged" ]; then
 fi
 
 #Si los archivos ya están fusionados, nos saltamos este paso.
+echo "Merging..."
 if [ ! -n "$(ls -A out/merged/ )" ]; then
 	for sid in $(ls data/*.fastq |cut -d "." -f1 | sed 's:data/::' | sort | uniq); do
                 bash scripts/merge_fastqs.sh data out/merged $sid
@@ -54,49 +55,58 @@ fi
 #Run cutadapt for all merged files. Primero necesitamos comprobar si los directorios existen. Si no, los creamos.
 
 if [ ! -d "log/cutadapt" ]; then
-	mkdir -p "log/cutadapt"
+        mkdir -p "log/cutadapt"
 fi
 
-if [ ! -d "out/trimmed" ]; then	
-	mkdir -p "out/trimmed"
+if [ ! -d "out/trimmed" ]; then 
+        mkdir -p "out/trimmed"
 fi
 #Si ya hemos eliminado los adaptadores, nos saltamos este paso.
-
-if [  -n "$(ls -A log/cutadapt/ )" ]; then
-	for filename in out/merged/*.fastq.gz; do
+echo "Trimming adapters..."
+if [ -z "$(ls -A log/cutadapt/ )" ]
+then
+        for filename in out/merged/*.fastq.gz
+        do
                 file="$(basename "$filename" .fastq.gz)"
+                echo "Before cutadapt: $filename"
                 cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
-		-o out/trimmed/"$file".trimmed.fastq.gz -p out/merged/"$file".fastq.gz > out/cutadapt/"$file".log
-        done
+                        -o out/trimmed/$file.trimmed.fastq.gz  out/merged/$file.fastq.gz > log/cutadapt/$file.log
+                echo "After cutadapt: $filename"        
+done
 
 else
-	echo "Skipping cutadapt."
+        echo "Skipping cutadapt."
 
 fi
 
 #Run STAR for all trimmed files. Comprobamos si existe el directorio, y si no, lo creamos.
 
 if [ ! -d "out/star" ]; then
-	mkdir -p "out/star"
+        mkdir -p "out/star"
 fi
 
 #Verificamos que la operación no se haya realizado ya.
-
-if [ ! -n "$(ls -A out/star/ )" ]; then
-	for fname in out/trimmed/*; do
+echo "Running STAR..."
+#if [ ! -n "$(ls -A out/star/)" ]; then
+if [ -n "find out/trimmed -type f -name '*.fastq.gz')" ]
+then 
+        for fname in out/trimmed/
+        do
                 sampleid="$(basename "$fname" .trimmed.fastq.gz)"
-                if [ ! -d "out/star/$sampleid" ]; then
+                if [ ! -d "out/star/$sampleid" ]
+                then
                         mkdir -p "out/star/$sampleid"
                 fi
 
                 STAR --runThreadN 4 --genomeDir res/contaminants_index \
                       --outReadsUnmapped Fastx --readFilesIn "$fname" \
-                      --readFilesCommand gunzip -c --outFileNamePrefix "out/star/$sampleid"
+                      --readFilesCommand gunzip -c --outFileNamePrefix out/star/$sampleid/
         done
 
 else
-	echo "Skipping STAR."
+        echo "No files found in out/trimmed. Skipping STAR."
 fi
+
 
 #Create a log file containing information from cutadapt and star logs (this should be a single log file, and information should be *appended* to it on each run)
 # - cutadapt: Reads with adapters and total basepairs
