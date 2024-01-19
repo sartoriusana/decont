@@ -112,31 +112,30 @@ fi
 # - cutadapt: Reads with adapters and total basepairs
 # - star: Percentages of uniquely mapped reads, reads mapped to multiple loci, and to too many loci
 
+#!/bin/bash
 
 if [ ! -e "log/pipeline.log" ]; then
-	touch "log/pipeline.log"
+    touch "log/pipeline.log"
 
-	for file in log/cutadapt/*; do
-		if [ ! -f "$file" ]; then
-			echo "Archivo $file" >> "log/pipeline.log"
-			grep -E "Total basepairs processed |Reads with adapters" "$file" >> "log/pipeline.log"
-			echo "........................" >> "log/pipeline.log"
-		fi
-	done
+    # Iterate over files in log/cutadapt/
+    for file in log/cutadapt/*; do
+        if [ ! -f "$file" ]; then
+            echo "Archivo $file" >> "log/pipeline.log"
+            grep -E "Total basepairs processed|Reads with adapters" "$file" >> "log/pipeline.log"
+            echo "........................" >> "log/pipeline.log"
+        fi
+    done
 
-	for dir in out/star/*; do
-		if [ ! -d "$dir" ]; then
-			file="$dir/Log.final.out"
-			if [ ! -f "$file" ]; then
-				echo "Archivo $file" >> "log/pipeline.log"
-				grep -E "Uniquely mapped reads %|% of reads mapped to muliple loci|% of reads mapped to too many loci" "$file" >> "log/pipeline.log"
-				echo "...................." >> "log/pipeline.log"
-			fi
-		fi
-	done
-
-else
-	echo "Skipping operation."
+    # Iterate over subdirectories in out/star/
+    for dir in out/star/*; do
+        if [ -d "$dir" ]; then
+            file="$dir/Log.final.out"
+            if [ ! -f "$file" ]; then
+                echo "Archivo $file" >> "log/pipeline.log"
+                grep -E "Uniquely mapped reads %|% of reads mapped to muliple loci|% of reads mapped to too many loci" "$file" >> "log/pipeline.log"
+                echo "...................." >> "log/pipeline.log"
+            fi
+        fi
+    done
 fi
 
-echo "fin"
