@@ -65,12 +65,11 @@ fi
 echo "Trimming adapters..."
 if [ -z "$(ls -A log/cutadapt/ )" ]
 then
-        for filename in out/merged/*.fastq.gz
+        for filename in $(ls out/merged/*.fastq.gz | xargs -n 1 basename)
         do
-                file="$(basename "$filename" .fastq.gz)"
                 echo "Before cutadapt: $filename"
                 cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed \
-                        -o out/trimmed/$file.trimmed.fastq.gz  out/merged/$file.fastq.gz > log/cutadapt/$file.log
+                        -o out/trimmed/"$filename".trimmed.fastq.gz  out/merged/"$filename" > log/cutadapt/"$filename".log >> log/pipeline.log 2>&1
                 echo "After cutadapt: $filename"        
 done
 
@@ -90,9 +89,10 @@ echo "Running STAR..."
 #if [ ! -n "$(ls -A out/star/)" ]; then
 if [ -n "find out/trimmed -type f -name '*.fastq.gz')" ]
 then 
-        for fname in out/trimmed/
+        for fname in out/trimmed/*.fastq.gz
         do
-                sampleid="$(basename "$fname" .trimmed.fastq.gz)"
+                sampleid=$(basename "$fname" .trimmed.fastq.gz | cut -d "." -f1 | cut -d "-" -f1)
+		echo "$sampleid"
                 if [ ! -d "out/star/$sampleid" ]
                 then
                         mkdir -p "out/star/$sampleid"
@@ -100,7 +100,7 @@ then
 
                 STAR --runThreadN 4 --genomeDir res/contaminants_index \
                       --outReadsUnmapped Fastx --readFilesIn "$fname" \
-                      --readFilesCommand gunzip -c --outFileNamePrefix out/star/$sampleid/
+                      --readFilesCommand gunzip -c --outFileNamePrefix out/star/"$sampleid"/ >> log/pipeline.log 2>&1
         done
 
 else
